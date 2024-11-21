@@ -1,0 +1,12 @@
+
+.idea
+
+venv
+
+prescriptions.csv
+procedures_icd.csv
+diagnoses_icd.csv
+drug-DDI.csv
+
+causal_graph.pkl
+matrix4causalgraph.pkl
