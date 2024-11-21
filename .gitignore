@@ -3,6 +3,8 @@
 
 venv
 
+__pycache__
+
 prescriptions.csv
 procedures_icd.csv
 diagnoses_icd.csv
