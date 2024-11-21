@@ -13,5 +13,4 @@ MIMIC IV database after filtering for sepsis patients only.
 
 The files that need to be provided for the data/graph folder:
 
-3. causal_graph.pkl and matrix4causalgraph.pkl can be generated using code from the 
-GitHub link: https://github.com/lixiang-222/CIDGMed
+3. causal_graph.pkl and matrix4causalgraph.pkl can be generated using the src file: causal_construction.py

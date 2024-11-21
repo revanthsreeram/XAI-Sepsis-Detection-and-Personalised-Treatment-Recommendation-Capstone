@@ -346,14 +346,21 @@ def get_ddi_maskH(med_structure_file, med_voc):
 
 def preprocess_pipeline(subject_id, hadm_id, icd_code_list, pro_code_list):
 
-    data_dict = {"subject_id": subject_id,
-                 "hadm_id": hadm_id,
-                 "icd_code": icd_code_list,
-                 "PRO_CODE": pro_code_list}
+    data = pd.DataFrame({
+        "subject_id":subject_id,
+        "hadm_id":hadm_id,
+        "icd_code":icd_code_list,
+        "ATC4": [[]],
+        "PRO_CODE": pro_code_list,
+        "ndc_Len" : 10
+    })
 
-    data = pd.DataFrame(data_dict)
-    diag_voc, med_voc, pro_voc = create_str_token_mapping(data)
-    records = create_patient_record(data, diag_voc, med_voc, pro_voc)
+    voc_path = f"Recommender/data/output/voc_final.pkl"
+    with open(voc_path, 'rb') as Fin:
+        voc = dill.load(Fin)
+    diag_voc, pro_voc, med_voc = voc['diag_voc'], voc['pro_voc'], voc['med_voc']
+
+    records = create_patient_record(data, diag_voc, med_voc, pro_voc, write=False)
 
     return records
 
@@ -414,6 +421,7 @@ if __name__ == '__main__':
     # ddi_matrix
     diag_voc, med_voc, pro_voc = create_str_token_mapping(data)
     records = create_patient_record(data, diag_voc, med_voc, pro_voc)
+    print(records[0])
     ddi_adj = get_ddi_matrix(records, med_voc, ddi_file)
 
     get_ddi_maskH(med_structure_file, med_voc)
