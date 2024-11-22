@@ -9,9 +9,16 @@ CORS(app)
 def api():
 
     data = request.get_json()
-    response = pipeline(data)
-    print(response)
-    return jsonify({"message": f"The list of medicines are {response}"})
+    recommender_response = pipeline(data)
+    print(recommender_response)
+    medications = recommender_response
+    classification = "Positive"
+    #classification = "Negative"
+    return jsonify({
+        "classification": classification,
+        "medications": medications,
+        "report":"The full medical report is yet to come. Please wait."
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)

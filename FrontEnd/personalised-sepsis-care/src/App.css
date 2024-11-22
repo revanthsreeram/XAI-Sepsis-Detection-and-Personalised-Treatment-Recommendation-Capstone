@@ -4,6 +4,11 @@ body {
   margin: 0;
   padding: 0;
 }
+.container {
+  max-width: 100%; /* Increase the maximum width */
+  margin: 0 auto; /* Center the container */
+  padding: 20px; /* Add some padding */
+}
 
 .App {
   padding: 20px;
@@ -19,7 +24,9 @@ textarea {
 }
 
 button {
-  font-size: 1rem;
+  font-size: 2rem;
+  width: 100%;
+  margin: 2rem auto 1rem;
 }
 
 .spinner-border {
@@ -29,4 +36,66 @@ button {
 
 .alert {
   background-color: #e9f7ef;
+}
+
+.medication-list-container {
+  background-color: #f9f9f9; /* Light gray background */
+  border: 1px solid #ddd; /* Subtle border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 20px; /* Padding inside the container */
+  margin-top: 20px; /* Space from other sections */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.medication-list-container h5 {
+  color: #333; /* Darker text for the title */
+  border-bottom: 2px solid #7b7f82; /* Accent color for title underline */
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.list-group-item {
+  background-color: #ffffff; /* White background for list items */
+  border: 1px solid #ddd; /* Border around individual items */
+  border-radius: 4px; /* Rounded corners for items */
+  margin-bottom: 10px; /* Space between items */
+}
+
+.report-container {
+  background-color: #f1f8ff; /* Light blue background for the report */
+  border: 1px solid #007bff; /* Blue border to match the theme */
+  border-radius: 8px; /* Rounded corners */
+  padding: 20px; /* Padding for text readability */
+  margin-top: 20px; /* Space from other sections */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.report-container h5 {
+  color: #0056b3; /* Darker blue for the title */
+  border-bottom: 2px solid #0056b3; /* Accent color for title underline */
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.report-container p {
+  font-size: 1rem; /* Slightly larger text for readability */
+  line-height: 1.6; /* Increase line height for easier reading */
+  color: #333; /* Darker text for better contrast */
+}
+
+.form-group-container {
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.form-group-heading {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  border-bottom: 2px solid;
+  padding-bottom: 5px;
 }

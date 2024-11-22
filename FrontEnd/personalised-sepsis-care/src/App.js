@@ -4,6 +4,9 @@ import Select from "react-select";
 import {Form, Button, Spinner, Container, Row, Col, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import "./App.css"
+import renderMedications from "./Components/renderMedications";
+import diagnosisOptions from "./Components/diagnosisOptions";
+import procedureOptions from "./Components/procedureOptions";
 
 function App() {
 
@@ -13,20 +16,6 @@ function App() {
   const [procCodes, setProcCodes] = useState([]);
   const [response, setResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const icdCodeOptions = [
-      {value: 'I10', label: 'I10'},
-      {value: 'D259', label: 'D259'},
-      {value: 'Z87891', label: 'Z87891'},
-      {value: 'E785', label: 'E785'},
-      {value: 'E890', label: 'E890'}
-  ]
-
-  const procCodeOptions = [
-      {value: '0TTB4ZZ', label: '0TTB4ZZ'},
-      {value: '07BC4ZX', label: '07BC4ZX'},
-      {value: '8E0W4CZ', label: '8E0W4CZ'}
-  ]
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,10 +29,10 @@ function App() {
         proc_codes: procCodes
       });
 
-      setResponse(res.data.message);
+      setResponse(res.data);
     }
     catch(err) {
-      setResponse("Error: " + err.message);
+      setResponse({classification : "Error", report: "Unable to fetch results from server."});
     }
     finally {
       setIsLoading(false);
@@ -53,33 +42,37 @@ function App() {
   return (
       <Container className="App">
         <Row className="justify-content-center">
-        <Col md={6}>
+        <Col md={8}>
           <h1 className="text-center mb-4"> Personalised Sepsis Care</h1>
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Subject ID:</Form.Label>
-              <Form.Control type="text" value={subjectId} onChange={(e) => setSubjectId(e.target.value)}
-                            placeholder="Enter Subject ID" required />
-            </Form.Group>
+            <div className="form-group-container">
+                <h5 className="form-group-heading">Patient Information</h5>
+                <Form.Group className="mb-3">
+                  <Form.Label>Subject ID:</Form.Label>
+                  <Form.Control type="text" value={subjectId} onChange={(e) => setSubjectId(e.target.value)}
+                                placeholder="Enter Subject ID" required />
+                </Form.Group>
 
-            <Form.Group className="mb-3">
-                <Form.Label>Admission ID:</Form.Label>
-                <Form.Control type="text" value={hadmId} onChange={(e) => setHadmId(e.target.value)}
-                              placeholder="Enter Admission ID" required></Form.Control>
-            </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label>Admission ID:</Form.Label>
+                    <Form.Control type="text" value={hadmId} onChange={(e) => setHadmId(e.target.value)}
+                                  placeholder="Enter Admission ID" required></Form.Control>
+                </Form.Group>
+            </div>
+            <div className="form-group-container">
+                <h5 className="form-group-heading">Diagnosis and Procedures</h5>
+                <Form.Group className="mb-3">
+                <Form.Label>Select Diagnosis ICD Codes:</Form.Label>
+                <Select isMulti name="icdCodes" options={diagnosisOptions} value={icdCodes}
+                        onChange={setIcdCodes} className="mb-3" placeholder="Select all the Diagnosis ICD Codes" required />
+                </Form.Group>
 
-            <Form.Group className="mb-3">
-            <Form.Label>Select ICD Codes:</Form.Label>
-            <Select isMulti name="icdCodes" options={icdCodeOptions} value={icdCodes}
-                    onChange={setIcdCodes} className="mb-3" placeholder="Select all the ICD Codes" value={icdCodes} required />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-                <Form.Label>Select Procedure Codes:</Form.Label>
-                <Select isMulti name="procCodes" options={procCodeOptions} value={procCodes}
-                onChange={setProcCodes} className="mb-3" placeholder="Select all the procCodes" value={procCodes} required />
-            </Form.Group>
-
+                <Form.Group className="mb-3">
+                    <Form.Label>Select Procedure ICD Codes:</Form.Label>
+                    <Select isMulti name="procCodes" options={procedureOptions} value={procCodes}
+                    onChange={setProcCodes} className="mb-3" placeholder="Select all the Procedure ICD Codes" required />
+                </Form.Group>
+            </div>
             <Button variant="success" type="submit" className="wb-100">Submit</Button>
           </Form>
 
@@ -89,14 +82,35 @@ function App() {
                 </div>
             )}
 
-            {response && !isLoading && (
-                <Alert variant="info" className="mt-3">
-                    <h2>Sepsis Report:</h2>
-                    <p>{response}</p>
+            {response && response.classification && !isLoading && (
+                <Alert
+                    style={{
+                        backgroundColor: response.classification === 'Positive' ? '#f8d7da' : '#d4edda', // Light red for Positive, Light green for Negative
+                        color: response.classification === 'Positive' ? '#721c24' : '#155724', // Darker text color for contrast
+                    }}
+                    variant={response.classification === "Positive" ? "danger" : "success"}
+                className="mt-4">
+                    <h5>
+                        {response.classification === "Positive"
+                        ? "Sepsis Suspected: Medical Attention Required"
+                        : "Sepsis Not Suspected: Medical Attention May Not Be Required"}
+                    </h5>
                 </Alert>
-            )
+            )}
 
-            }
+            {response && response.medications && (
+                <div className="medication-list-container">
+                    <h5>Recommended Medications:</h5>
+                    {renderMedications(response.medications)}
+                </div>
+            )}
+
+            {response && response.report && (
+                <div className="report-container">
+                    <h5>Medical Report:</h5>
+                    <p>{response.report}</p>
+                </div>
+            )}
         </Col>
         </Row>
       </Container>
