@@ -65,7 +65,7 @@ def get_drug_desc(atc4_code):
 def pipeline_recommender(eval, subject_id, hadm_id):
     set_seed()
     args = parse_args()
-    print(args)
+    #print(args)
     if not torch.cuda.is_available() or args.device < 0:
         device = torch.device("cpu")
         if not args.Test:
@@ -146,6 +146,7 @@ def pipeline_recommender(eval, subject_id, hadm_id):
                 y_labels.append(med_voc.idx2word[value])
             with ThreadPoolExecutor() as executor:
                 y_labels = list(executor.map(get_drug_desc, y_labels))
+                print(y_labels)
 
     return y_labels
 """

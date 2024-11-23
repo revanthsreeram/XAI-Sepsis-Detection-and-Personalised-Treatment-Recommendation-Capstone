@@ -1,20 +1,35 @@
 from Recommender.data.processing import preprocess_pipeline
 from Recommender.src.recommend import pipeline_recommender
-from ReportGeneration.report_generation import local_search
+from ReportGeneration.report_generation import local_search, generate_response
 from langchain.prompts import PromptTemplate
 
-template = """ You are a medical assistant to assist doctors with dealing with patients who may be suspected of sepsis.
-You must generate a report with the information given to you. Go into detail of symptoms, specific causes for sepsis and 
+final_template = """ You are a medical assistant to assist doctors with dealing with patients who may be suspected of sepsis.
+You must generate a report with the information given to you. Go into detail of symptoms, effect on patient and 
 the treatments recommended which must be specific to the given patient. Reduce the amount of generalisation.
 The classifier suggests that the patient is sepsis {classifier_label}. 
-The feature importance of all the factors considered for the above decision will be given to you in a JSON format
-along with the values observed in the patient.
+The feature importance of all the factors considered for the above decision will be given to you in a list of list format
+along with the values observed in the patient. The format will be of the type [features, importance, test_instance_value]
 The feature_importance with values are {feature_importance}.
 The recommended medication is given as a list. If the patient is not Positive, no medication will be given.
 The recommended medications are : {medication_list}. Do not just list the medications. Give some context to all of them.
 
+The relevant information regarding the above mentioned details are: {relevant_information}.
+
 Give a report with sufficient details to help the doctor and other users understand the case better and explain the 
-suggestions properly. Provide the data in html format with proper formatting for headings and new lines.
+suggestions properly. Be as detailed as possible. Provide the data in markdown format with proper formatting for headings and new lines.
+"""
+
+
+information_template = """
+
+The classifier suggests that the patient is sepsis {classifier_label}. 
+The feature importance of all the factors considered for the above decision will be given to you in a list of list format
+along with the values observed in the patient. The format will be of the type [features, importance, test_instance_value]
+The feature_importance with values are {feature_importance}.
+The recommended medication is given as a list. If the patient is not Positive, no medication will be given.
+The recommended medications are : {medication_list}. Do not just list the medications. Give some context to all of them.
+
+
 """
 
 
@@ -55,7 +70,7 @@ def generate_report(classifier_label, feature_importance, medication_list):
 
     prompt_template = PromptTemplate(
         input_variables=["classifier_label","feature_importance","medication_list"],
-        template = template
+        template = information_template
     )
 
     formatted_prompt = prompt_template.format(
@@ -65,6 +80,21 @@ def generate_report(classifier_label, feature_importance, medication_list):
     )
 
     response = local_search(formatted_prompt)
+
+    prompt_template = PromptTemplate(
+        input_variables=["classifier_label","feature_importance","medication_list","relevant_information"],
+        template = final_template
+    )
+
+    formatted_prompt = prompt_template.format(
+        classifier_label=classifier_label,
+        feature_importance=feature_importance,
+        medication_list=medication_list,
+        relevant_information = response
+    )
+
+    response = generate_response(formatted_prompt)
+
     return response
 
 

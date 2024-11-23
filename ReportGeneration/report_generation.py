@@ -9,6 +9,7 @@ from graphrag.query.indexer_adapters import (
     read_indexer_reports,
     read_indexer_text_units
 )
+from openai import OpenAI
 from graphrag.query.input.loaders.dfs import store_entity_semantic_embeddings
 from graphrag.query.llm.oai.chat_openai import ChatOpenAI
 from graphrag.query.llm.oai.embedding import OpenAIEmbedding
@@ -18,6 +19,7 @@ from graphrag.query.structured_search.local_search.mixed_context import LocalSea
 from graphrag.query.structured_search.drift_search.search import DRIFTSearch
 from graphrag.query.structured_search.local_search.search import LocalSearch
 from graphrag.vector_stores.lancedb import LanceDBVectorStore
+from pyexpat.errors import messages
 
 load_dotenv()
 
@@ -124,3 +126,17 @@ def local_search(query):
     result = search_engine.search(query)
     print(result.response)
     return result.response
+
+
+def generate_response(query):
+    client = OpenAI(
+        api_key=api_key
+    )
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo-0125",
+        messages = [{"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": query}]
+    )
+    response = response.choices[0].message.content
+    print(response)
+    return response
