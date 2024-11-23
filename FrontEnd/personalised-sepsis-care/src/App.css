@@ -70,7 +70,7 @@ button {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
-.report-container h5 {
+.report-container h1.underline {
   color: #0056b3; /* Darker blue for the title */
   border-bottom: 2px solid #0056b3; /* Accent color for title underline */
   padding-bottom: 10px;

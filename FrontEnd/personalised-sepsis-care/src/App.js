@@ -7,6 +7,7 @@ import "./App.css"
 import renderMedications from "./Components/renderMedications";
 import diagnosisOptions from "./Components/diagnosisOptions";
 import procedureOptions from "./Components/procedureOptions";
+import ReactMarkdown from "react-markdown";
 
 function App() {
 
@@ -98,17 +99,17 @@ function App() {
                 </Alert>
             )}
 
-            {response && response.medications && (
+            {response && response.medications && !isLoading && (
                 <div className="medication-list-container">
                     <h5>Recommended Medications:</h5>
                     {renderMedications(response.medications)}
                 </div>
             )}
 
-            {response && response.report && (
+            {response && response.report && !isLoading && (
                 <div className="report-container">
-                    <h5>Medical Report:</h5>
-                    <p>{response.report}</p>
+                    <h1 className="underline">Medical Report:</h1>
+                    <ReactMarkdown>{response.report}</ReactMarkdown>
                 </div>
             )}
         </Col>

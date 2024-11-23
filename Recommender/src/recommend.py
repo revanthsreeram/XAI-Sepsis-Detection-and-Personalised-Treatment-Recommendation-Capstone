@@ -8,6 +8,7 @@ from Recommender.src.modules.CIDGMed import CIDGMed
 from Recommender.src.modules.causal_construction import CausaltyGraph4Visit
 from Recommender.src.training import Test, Train, Evaluate
 from Recommender.src.util import buildPrjSmiles
+from concurrent.futures import ThreadPoolExecutor
 
 def set_seed():
     torch.manual_seed(1203)
@@ -142,7 +143,9 @@ def pipeline_recommender(eval, subject_id, hadm_id):
         for adm_idx, y_pred_label_adm in enumerate(y_pred_label):
             y_labels = []
             for value in y_pred_label_adm:
-                y_labels.append(get_drug_desc(med_voc.idx2word[value]))
+                y_labels.append(med_voc.idx2word[value])
+            with ThreadPoolExecutor() as executor:
+                y_labels = list(executor.map(get_drug_desc, y_labels))
 
     return y_labels
 """

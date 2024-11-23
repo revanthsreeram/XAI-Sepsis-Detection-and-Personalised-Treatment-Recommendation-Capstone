@@ -1,6 +1,5 @@
 import os
 from enum import unique
-
 import dill
 import networkx as nx
 import pandas as pd

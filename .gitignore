@@ -12,3 +12,8 @@ drug-DDI.csv
 
 causal_graph.pkl
 matrix4causalgraph.pkl
+
+ReportGeneration/ragtest/output
+ReportGeneration/ragtest/__MACOSX
+
+*.env
