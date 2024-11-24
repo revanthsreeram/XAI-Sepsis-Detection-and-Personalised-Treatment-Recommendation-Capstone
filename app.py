@@ -9,6 +9,7 @@ CORS(app)
 def api():
 
     data = request.get_json()
+    print(data)
     classification_label, medication_list, report = pipeline(data)
 
     return jsonify({

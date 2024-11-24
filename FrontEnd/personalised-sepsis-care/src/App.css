@@ -99,3 +99,77 @@ button {
   border-bottom: 2px solid;
   padding-bottom: 5px;
 }
+
+.vitals-table {
+  font-size: 14px;
+  text-align: center;
+}
+
+.vitals-table th, .vitals-table td {
+  white-space: nowrap;
+}
+
+.form-group-container {
+  margin-bottom: 20px;
+}
+
+.form-group-heading {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.table-container h5 {
+  margin-bottom: 15px;
+}
+
+.table-container table {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+.table-container th,
+.table-container td {
+  text-align: center;
+  vertical-align: middle;
+  min-width: 100px; /* Ensure columns are wide enough for visibility */
+}
+.table-container {
+  margin-top: 20px;
+}
+
+.header-row {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.header-col {
+  font-weight: bold;
+  text-align: center;
+  padding: 5px;
+}
+
+.data-row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.data-col {
+  text-align: center;
+  padding: 5px;
+}
+
+.accordion-header {
+  background-color: #f7f7f7;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.accordion-body {
+  padding: 10px;
+}
+
+button {
+  width: 100%;
+}

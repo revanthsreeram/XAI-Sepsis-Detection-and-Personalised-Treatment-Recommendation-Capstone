@@ -1,21 +1,32 @@
 import React, {useState} from 'react';
 import axios from 'axios';
-import Select from "react-select";
-import {Form, Button, Spinner, Container, Row, Col, Alert } from 'react-bootstrap';
+import {Button, Spinner, Container, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import "./App.css"
-import renderMedications from "./Components/renderMedications";
-import diagnosisOptions from "./Components/diagnosisOptions";
-import procedureOptions from "./Components/procedureOptions";
-import ReactMarkdown from "react-markdown";
+import PatientInfoForm from "./Components/patientInfoForm";
+import DiagAndProcForm from "./Components/diagAndProcForm";
+import HourlyVitalsTable from "./Components/hourlyVitalsTable";
+import Results from "./Components/results";
 
 function App() {
 
   const [subjectId, setSubjectId] = useState('');
   const [hadmId, setHadmId] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [icuLoc, setIcuLoc] = useState('');
+  const [hospAdmTime, setHospAdmTime] = useState('');
   const [icdCodes, setIcdCodes] = useState([]);
   const [procCodes, setProcCodes] = useState([]);
   const [response, setResponse] = useState('');
+  const [vitalsData, setVitalsData] = useState([
+      {
+          HR:"",O2Sat:"",Temp:"",SBP:"",MAP:"",DBP:"",Resp:"",EtCO2:"",BaseExcess:"",HCO3:"",FiO2:"",pH:"",PaCO2:"",SaO2:"",
+          AST:"",BUN:"",Alkalinephos:"",Calcium:"", Chloride:"", Creatinine:"", Bilirubin_direct:"", Glucose:"", Lactate:"",
+          Magnesium:"", Phosphate:"", Potassium:"", Bilirubin_total:"", TroponinI:"", Hct:"", Hgb:"", PTT:"", WBC:"",  Fibrinogen:"",
+          Platelets:"", timestamp:1
+      }
+  ]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -26,8 +37,13 @@ function App() {
       const res = await axios.post('http://localhost:5000/api', {
         subject_id: subjectId,
         hadm_id: hadmId,
+        age: age,
+        gender: gender,
+        icuLoc: icuLoc,
+        hospAdmTime: hospAdmTime,
         icd_codes: icdCodes,
-        proc_codes: procCodes
+        proc_codes: procCodes,
+        vitals_data: vitalsData
       });
 
       setResponse(res.data);
@@ -43,76 +59,24 @@ function App() {
   return (
       <Container className="App">
         <Row className="justify-content-center">
-        <Col md={8}>
-          <h1 className="text-center mb-4"> Personalised Sepsis Care</h1>
-          <Form onSubmit={handleSubmit}>
-            <div className="form-group-container">
-                <h5 className="form-group-heading">Patient Information</h5>
-                <Form.Group className="mb-3">
-                  <Form.Label>Subject ID:</Form.Label>
-                  <Form.Control type="text" value={subjectId} onChange={(e) => setSubjectId(e.target.value)}
-                                placeholder="Enter Subject ID" required />
-                </Form.Group>
+            <Col md={8}>
+              <h1 className="text-center mb-4"> Personalised Sepsis Care</h1>
+              <PatientInfoForm subjectId={subjectId} setSubjectId={setSubjectId} hadmId={hadmId} setHadmId={setHadmId} age={age} setAge={setAge} gender={gender} setGender={setGender} icuLoc={icuLoc} setIcuLoc={setIcuLoc} hospAdmTime={hospAdmTime} setHospAdmTime={setHospAdmTime}/>
 
-                <Form.Group className="mb-3">
-                    <Form.Label>Admission ID:</Form.Label>
-                    <Form.Control type="text" value={hadmId} onChange={(e) => setHadmId(e.target.value)}
-                                  placeholder="Enter Admission ID" required></Form.Control>
-                </Form.Group>
-            </div>
-            <div className="form-group-container">
-                <h5 className="form-group-heading">Diagnosis and Procedures</h5>
-                <Form.Group className="mb-3">
-                <Form.Label>Select Diagnosis ICD Codes:</Form.Label>
-                <Select isMulti name="icdCodes" options={diagnosisOptions} value={icdCodes}
-                        onChange={setIcdCodes} className="mb-3" placeholder="Select all the Diagnosis ICD Codes" required />
-                </Form.Group>
+              <HourlyVitalsTable vitalsData={vitalsData} setVitalsData={setVitalsData}/>
 
-                <Form.Group className="mb-3">
-                    <Form.Label>Select Procedure ICD Codes:</Form.Label>
-                    <Select isMulti name="procCodes" options={procedureOptions} value={procCodes}
-                    onChange={setProcCodes} className="mb-3" placeholder="Select all the Procedure ICD Codes" required />
-                </Form.Group>
-            </div>
-            <Button variant="success" type="submit" className="wb-100">Submit</Button>
-          </Form>
+              <DiagAndProcForm icdCodes={icdCodes} setIcdCodes={setIcdCodes} procCodes={procCodes} setProcCodes={setProcCodes} />
 
-            {isLoading && (
-                <div className="text-center mt-3">
-                    <Spinner animation="border" role="status" variant="primary" />
-                </div>
-            )}
+                <Button variant="success" className="wb-100" onClick={handleSubmit}>Submit</Button>
 
-            {response && response.classification && !isLoading && (
-                <Alert
-                    style={{
-                        backgroundColor: response.classification === 'Positive' ? '#f8d7da' : '#d4edda', // Light red for Positive, Light green for Negative
-                        color: response.classification === 'Positive' ? '#721c24' : '#155724', // Darker text color for contrast
-                    }}
-                    variant={response.classification === "Positive" ? "danger" : "success"}
-                className="mt-4">
-                    <h5>
-                        {response.classification === "Positive"
-                        ? "Sepsis Suspected: Medical Attention Required"
-                        : "Sepsis Not Suspected: Medical Attention May Not Be Required"}
-                    </h5>
-                </Alert>
-            )}
+                {isLoading && (
+                    <div className="text-center mt-3">
+                        <Spinner animation="border" role="status" variant="primary" />
+                    </div>
+                )}
 
-            {response && response.medications && !isLoading && (
-                <div className="medication-list-container">
-                    <h5>Recommended Medications:</h5>
-                    {renderMedications(response.medications)}
-                </div>
-            )}
-
-            {response && response.report && !isLoading && (
-                <div className="report-container">
-                    <h1 className="underline">Medical Report:</h1>
-                    <ReactMarkdown>{response.report}</ReactMarkdown>
-                </div>
-            )}
-        </Col>
+                <Results response={response} isLoading={isLoading} />
+            </Col>
         </Row>
       </Container>
   )
