@@ -1,7 +1,10 @@
+from xml.dom.minidom import NamedNodeMap
+
 from Recommender.data.processing import preprocess_pipeline
 from Recommender.src.recommend import pipeline_recommender
 from ReportGeneration.report_generation import local_search, generate_response
 from langchain.prompts import PromptTemplate
+from Classifier.sepsis_classifier import classifier_pipeline
 
 final_template = """ You are a medical assistant to assist doctors with dealing with patients who may be suspected of sepsis.
 You must generate a report with the information given to you. Go into detail of symptoms, effect on patient and 
@@ -32,14 +35,48 @@ The recommended medications are : {medication_list}. Do not just list the medica
 
 """
 
+column_order = [
+    "HR", "O2Sat", "Temp", "SBP", "MAP", "DBP", "Resp", "EtCO2",
+    "BaseExcess", "HCO3", "FiO2", "pH", "PaCO2", "SaO2", "AST",
+    "BUN", "Alkalinephos", "Calcium", "Chloride", "Creatinine",
+    "Bilirubin_direct", "Glucose", "Lactate", "Magnesium", "Phosphate",
+    "Potassium", "Bilirubin_total", "TroponinI", "Hct", "Hgb", "PTT",
+    "WBC", "Fibrinogen", "Platelets", "Age", "Gender", "Unit1", "Unit2", "HospAdmTime", "ICULOS", "SepsisLabel"
+]
+
+
+def json_to_psv(json_list, column_order, age, gender, hosp_adm_time):
+
+    psv_content = "|".join(column_order) + "\n"
+
+    for item in json_list:
+        item["Age"] = age
+        if gender.lower() == "male":
+            item["Gender"] = 0
+        else:
+            item["Gender"] = 1
+        item["Unit1"] = "NaN"
+        item["Unit2"] = "NaN"
+        item["HospAdmTime"] = hosp_adm_time
+        item["ICULOS"] = item["icuLos"]
+        item["SepsisLabel"] = 0
+        row = [str(item.get(header, "")) for header in column_order]
+        psv_content += "|".join(row) +"\n"
+
+    with open("Classifier/data/output.psv", "w") as f:
+        f.write(psv_content)
 
 def classifier_output(json_input):
 
-    return "Positive", {
-        "icu_length_of_stay":"5 days",
-        "temperature_max": "38C",
-        "potassium":"4.22mmol/l"
-    }
+    vitals = json_input["vitals_data"]
+    age = json_input["age"]
+    gender = json_input["gender"]
+    hosp_adm_time = json_input["hosp_adm_time"]
+    json_to_psv(vitals, column_order, age, gender, hosp_adm_time)
+
+    classifier_label, feature_importance = classifier_pipeline()
+
+    return classifier_label, feature_importance
 
 
 def process_codes(dict_list):
@@ -49,6 +86,7 @@ def process_codes(dict_list):
         required_list.append(json['value'])
 
     return required_list
+
 
 def recommender_output(json_input):
 
