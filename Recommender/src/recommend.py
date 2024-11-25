@@ -9,6 +9,8 @@ from Recommender.src.modules.causal_construction import CausaltyGraph4Visit
 from Recommender.src.training import Test, Train, Evaluate
 from Recommender.src.util import buildPrjSmiles
 from concurrent.futures import ThreadPoolExecutor
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 
 def set_seed():
     torch.manual_seed(1203)
@@ -45,22 +47,37 @@ def parse_args():
 
     return args
 
+
 def get_drug_desc(atc4_code):
+    # Set up a session with retry logic
+    session = requests.Session()
+    retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504], allowed_methods=["GET"])
+    session.mount('https://', HTTPAdapter(max_retries=retries))
+    session.mount('http://', HTTPAdapter(max_retries=retries))
 
     url = f"https://atcddd.fhi.no/atc_ddd_index/?code={atc4_code}&showdescription=no"
     query = f"code={atc4_code}&showdescription=no"
-    response = requests.get(url)
 
-    soup = BeautifulSoup(response.text,"html.parser")
-    div = soup.find("div",attrs={"id":"content"})
-    b_tags = div.find_all("b")
+    try:
+        # Make the request using the session
+        response = session.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors
 
-    for b_tag in b_tags:
-        a_tag = b_tag.find("a",href=True)
-        if a_tag and query in a_tag["href"]:
-            return a_tag.text
+        soup = BeautifulSoup(response.text, "html.parser")
+        div = soup.find("div", attrs={"id": "content"})
+        b_tags = div.find_all("b")
 
-    return "Error"
+        for b_tag in b_tags:
+            a_tag = b_tag.find("a", href=True)
+            if a_tag and query in a_tag["href"]:
+                return a_tag.text
+
+        return "Error"
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data: {e}")
+        return "Error"
+
 
 def pipeline_recommender(eval, subject_id, hadm_id):
     set_seed()

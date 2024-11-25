@@ -70,10 +70,11 @@ def Evaluate(model, device, data_eval):
 
             output = torch.sigmoid(output).detach().cpu().numpy()[0]
             y_pred_prob.append(output)
+            print(output)
 
             y_pred_tmp = output.copy()
-            y_pred_tmp[y_pred_tmp >= 0.5] = 1
-            y_pred_tmp[y_pred_tmp < 0.5] = 0
+            y_pred_tmp[y_pred_tmp >= 0.51] = 1
+            y_pred_tmp[y_pred_tmp < 0.51] = 0
             y_pred.append(y_pred_tmp)
 
             y_pred_label_tmp = np.where(y_pred_tmp == 1)[0]

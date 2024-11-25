@@ -352,7 +352,7 @@ def preprocess_pipeline(subject_id, hadm_id, icd_code_list, pro_code_list):
         "icd_code":icd_code_list,
         "ATC4": [[]],
         "PRO_CODE": pro_code_list,
-        "ndc_Len" : 10
+        "ndc_Len" : 3
     })
 
     voc_path = f"Recommender/data/output/voc_final.pkl"
@@ -414,6 +414,7 @@ if __name__ == '__main__':
 
     # combine
     data = combine_process(med_pd, diag_pd, proc_pd)
+    data.to_csv("test.csv")
     statistics(data)
 
     print('complete combining')

@@ -1,25 +1,17 @@
 import {Button, Form, Accordion} from "react-bootstrap";
-import React, { useEffect } from "react";
+import React from "react";
 
 const HourlyVitalsTable = ({vitalsData, setVitalsData}) => {
     const columnGroups = [
         { title: "Vitals", keys: ["HR", "O2Sat", "Temp", "SBP", "MAP", "DBP", "Resp", "EtCO2"] },
-        { title: "Blood Chemistry", keys: ["BaseExcess", "HCO3", "FiO2", "pH", "PaCO2", "SaO2", "AST", "BUN"] },
-        { title: "Others", keys: ["Alkalinephos", "Calcium", "Chloride", "Creatinine", "Bilirubin_direct", "Glucose"] },
+        { title: "Blood Chemistry", keys: ["BaseExcess", "HCO3", "FiO2", "pH", "PaCO2", "SaO2", "AST", "BUN","WBC","Fibrinogen","Hct","Hgb","PTT","Platelets"] },
+        { title: "Others", keys: ["Alkalinephos", "Calcium", "Chloride", "Creatinine", "Bilirubin_direct", "Glucose","Lactate","Magnesium","Phosphate","Potassium", "Bilirubin_total","TroponinI","icuLos"] }
     ];
-
-    useEffect(() => {
-        const savedData = localStorage.getItem('vitalsData');
-        if (savedData) {
-            setVitalsData(JSON.parse(savedData));
-        }
-    }, []);
 
     const handleInputChange = (index, field, value) => {
         const updatedData = [...vitalsData];
         updatedData[index][field] = value;
         setVitalsData(updatedData);
-        localStorage.setItem('vitalsData', JSON.stringify(updatedData));
     };
 
     const addNewRow = () => {
@@ -35,11 +27,6 @@ const HourlyVitalsTable = ({vitalsData, setVitalsData}) => {
             ),
         ];
         setVitalsData(newData);
-    };
-
-    const clearData = () => {
-        localStorage.removeItem('vitalsData');
-        setVitalsData([]);
     };
 
     const splitIntoTwoRows = (arr) => {
@@ -127,9 +114,6 @@ const HourlyVitalsTable = ({vitalsData, setVitalsData}) => {
             </Accordion>
             <Button variant="primary" onClick={addNewRow} className="mt-3">
                 Add Row
-            </Button>
-            <Button variant="danger" onClick={clearData}>
-                Clear All Data
             </Button>
         </div>
     );

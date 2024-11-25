@@ -34,7 +34,8 @@ COMMUNITY_LEVEL = 2
 
 
 api_key = os.getenv("GRAPHRAG_API_KEY")
-llm_model = "gpt-3.5-turbo-0125"
+#llm_model = "gpt-3.5-turbo-0125"
+llm_model = "gpt-4o-mini"
 embedding_model = "text-embedding-3-small"
 
 llm = ChatOpenAI(

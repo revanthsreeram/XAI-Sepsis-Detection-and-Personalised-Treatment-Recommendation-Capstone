@@ -17,3 +17,10 @@ ReportGeneration/ragtest/output
 ReportGeneration/ragtest/__MACOSX
 
 *.env
+
+Classifier/test.pkl
+Classifier/training
+Classifier/data
+Classifier/y_train.pkl
+Classifier/X_train.pkl
+Recommender/data/test.csv

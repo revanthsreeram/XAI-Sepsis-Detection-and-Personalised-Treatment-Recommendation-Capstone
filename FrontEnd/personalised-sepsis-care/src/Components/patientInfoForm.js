@@ -2,7 +2,7 @@ import React from "react";
 import {Form} from "react-bootstrap";
 
 const PatientInfoForm = (
-    {subjectId, setSubjectId, hadmId, setHadmId, age, setAge, gender, setGender, icuLoc, setIcuLoc, hospAdmTime, setHospAdmTime}
+    {subjectId, setSubjectId, hadmId, setHadmId, age, setAge, gender, setGender, hospAdmTime, setHospAdmTime}
 ) => (
 
     <div className="form-group-container">
@@ -29,12 +29,6 @@ const PatientInfoForm = (
             <Form.Label> Gender:</Form.Label>
             <Form.Control type="text" value={gender} onChange={(e) => setGender(e.target.value)}
                           placeholder="Enter gender" required></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-            <Form.Label>ICU Length of Stay:</Form.Label>
-            <Form.Control type="text" value={icuLoc} onChange={(e) => setIcuLoc(e.target.value)}
-                          placeholder="Enter ICU Length of Stay" required></Form.Control>
         </Form.Group>
 
         <Form.Group className="mb-3">
