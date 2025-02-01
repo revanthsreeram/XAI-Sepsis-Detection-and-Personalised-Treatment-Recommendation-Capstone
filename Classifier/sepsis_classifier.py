@@ -701,10 +701,13 @@ def classifier_pipeline():
 
     tree, cluster_id, detailed_explanation = explainer.explain_instance(test_instance, df)
 
+    feature_list:list = list()
+
     print("\nFeature Importances and Values:")
     print("Feature Name | Importance | Actual Value")
     print("-" * 50)
     for feature_name, importance, value in detailed_explanation:
         print(f"{feature_name:<20} {importance:.4f}    {value:.4f}")
+        feature_list.append((feature_name, value))
 
-    return classifier_label, detailed_explanation[:10]
+    return classifier_label,feature_list

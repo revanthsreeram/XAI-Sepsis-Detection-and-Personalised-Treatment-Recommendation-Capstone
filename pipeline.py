@@ -7,17 +7,17 @@ from langchain.prompts import PromptTemplate
 from Classifier.sepsis_classifier import classifier_pipeline
 
 final_template = """ You are a medical assistant to assist doctors with dealing with patients who may be suspected of sepsis.
-You must generate a report with the information given to you. Go into detail of symptoms, effect on patient and 
-the treatments recommended which must be specific to the given patient. Reduce the amount of generalisation.
+You must generate a report with the information given to you. Go into detail about all the information give to you. 
+Reduce the amount of generalisation.
 The classifier suggests that the patient is sepsis {classifier_label}. 
-The feature importance of all the factors considered for the above decision will be given to you in a list of list format
-along with the values observed in the patient. The format will be of the type [features, importance, test_instance_value]
-The feature_importance with values are {feature_importance}.
+The list of features are given as {feature_importance}.
+
 The recommended medication is given as a list. If the patient is not Positive, no medication will be given.
 The recommended medications are : {medication_list}. Do not just list the medications. Give some context to all of them.
 
 The relevant information regarding the above mentioned details are: {relevant_information}.
 
+Do not make up findings. Only list in the report if the information is present.
 Give a report with sufficient details to help the doctor and other users understand the case better and explain the 
 suggestions properly. Be as detailed as possible. Provide the data in markdown format with proper formatting for headings and new lines.
 """
@@ -105,6 +105,8 @@ def recommender_output(json_input):
     return medication_list
 
 def generate_report(classifier_label, feature_importance, medication_list):
+
+    print(feature_importance)
 
     prompt_template = PromptTemplate(
         input_variables=["classifier_label","feature_importance","medication_list"],
